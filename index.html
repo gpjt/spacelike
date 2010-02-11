@@ -137,12 +137,7 @@
   var mvMatrix;
 
   function loadIdentity() {
-    mvMatrix = M4x4.$(
-      1, 0, 0, 0,
-      0, 1, 0, 0,
-      0, 0, 1, 0,
-      0, 0, 0, 1
-    );
+    mvMatrix = M4x4.clone(M4x4.I);
   }
 
 
