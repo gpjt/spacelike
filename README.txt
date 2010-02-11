@@ -15,7 +15,7 @@ manual (and will be improved, honest :-):
 - Select the spacecraft from the Blender 3D view
 - Export to Wavefront (.obj) format, with the following settings:
     - Context: Selection only
-    - Output options: all off
+    - Output options: apply modifiers on, rotate x90 and copy images off
     - Export: edges off, triangulate on, materials off, uvs off, normals on, hq off, polygroups off, nurbs off, objects off, groups off, material groups off, keep vert order on
 - Run the JavaScript conversion program by opening the file ObjToJSON.html in a browser
 - Copy the content in the browser page, and paste it to spacecraft.json
