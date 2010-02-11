@@ -302,7 +302,8 @@
   }
 
 
-  var spacecraftAngle = 180;
+  var cameraRotationMatrix;
+  var cameraDistance;
 
   function drawScene() {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
@@ -354,9 +355,9 @@
 
     loadIdentity();
 
-    mvTranslate([0, 0, -30]);
-    mvRotate(23.4, [1, 0, -1]);
-    mvRotate(spacecraftAngle, [0, 1, 0]);
+    mvTranslate([0, 0, -cameraDistance]);
+    mvMatrix = M4x4.mul(mvMatrix, cameraRotationMatrix);
+
     gl.activeTexture(gl.TEXTURE0);
     if (texture == "earth") {
       gl.bindTexture(gl.TEXTURE_2D, earthTexture);
@@ -387,8 +388,6 @@
     var timeNow = new Date().getTime();
     if (lastTime != 0) {
       var elapsed = timeNow - lastTime;
-
-      spacecraftAngle += 0.05 * elapsed;
     }
     lastTime = timeNow;
   }
@@ -401,9 +400,17 @@
   }
 
 
+
+  function initCamera() {
+    cameraRotationMatrix = M4x4.makeRotate(10 * Math.PI / 180, [1, 0, 0]);
+    cameraDistance = 30;
+  }
+
+
   function webGLStart() {
     var canvas = document.getElementById("canvas-3d");
     initGL(canvas);
+    initCamera();
     initShaders();
     initTextures();
     loadSpacecraft();
