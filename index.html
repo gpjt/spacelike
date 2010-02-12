@@ -88,6 +88,7 @@
   function initGL(canvas) {
     try {
       gl = canvas.getContext("experimental-webgl");
+      gl.viewport(0, 0, canvas.width, canvas.height);
     } catch(e) {
     }
     if (!gl) {
@@ -293,49 +294,74 @@
   }
 
 
-  var spacecraftVertexPositionBuffer;
-  var spacecraftVertexNormalBuffer;
-  var spacecraftVertexTextureCoordBuffer;
-  var spacecraftVertexIndexBuffer;
-  function handleLoadedSpacecraft(spacecraftData) {
-    spacecraftVertexNormalBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, spacecraftVertexNormalBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new WebGLFloatArray(spacecraftData.vertexNormals), gl.STATIC_DRAW);
-    spacecraftVertexNormalBuffer.itemSize = 3;
-    spacecraftVertexNormalBuffer.numItems = spacecraftData.vertexNormals.length / 3;
-
-    spacecraftVertexTextureCoordBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, spacecraftVertexTextureCoordBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new WebGLFloatArray(spacecraftData.vertexTextureCoords), gl.STATIC_DRAW);
-    spacecraftVertexTextureCoordBuffer.itemSize = 2;
-    spacecraftVertexTextureCoordBuffer.numItems = spacecraftData.vertexTextureCoords.length / 2;
-
-    spacecraftVertexPositionBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, spacecraftVertexPositionBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new WebGLFloatArray(spacecraftData.vertexPositions), gl.STATIC_DRAW);
-    spacecraftVertexPositionBuffer.itemSize = 3;
-    spacecraftVertexPositionBuffer.numItems = spacecraftData.vertexPositions.length / 3;
-
-    spacecraftVertexIndexBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, spacecraftVertexIndexBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new WebGLUnsignedShortArray(spacecraftData.indices), gl.STREAM_DRAW);
-    spacecraftVertexIndexBuffer.itemSize = 3;
-    spacecraftVertexIndexBuffer.numItems = spacecraftData.indices.length;
-
-    document.getElementById("loadingtext").textContent = "";
+  function Spacecraft() {
+    this.load();
   }
 
 
-  function loadSpacecraft() {
+  Spacecraft.prototype.load = function() {
     var request = new XMLHttpRequest();
     request.open("GET", "spacecraft.json");
+    var spacecraft = this;
     request.onreadystatechange = function() {
       if (request.readyState == 4) {
-        handleLoadedSpacecraft(JSON.parse(request.responseText));
+        spacecraft.onLoaded(JSON.parse(request.responseText));
       }
     }
     request.send();
   }
+
+
+  Spacecraft.prototype.onLoaded = function(spacecraftData) {
+    this.vertexNormalBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexNormalBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new WebGLFloatArray(spacecraftData.vertexNormals), gl.STATIC_DRAW);
+    this.vertexNormalBuffer.itemSize = 3;
+    this.vertexNormalBuffer.numItems = spacecraftData.vertexNormals.length / 3;
+
+    this.vertexTextureCoordBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexTextureCoordBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new WebGLFloatArray(spacecraftData.vertexTextureCoords), gl.STATIC_DRAW);
+    this.vertexTextureCoordBuffer.itemSize = 2;
+    this.vertexTextureCoordBuffer.numItems = spacecraftData.vertexTextureCoords.length / 2;
+
+    this.vertexPositionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexPositionBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new WebGLFloatArray(spacecraftData.vertexPositions), gl.STATIC_DRAW);
+    this.vertexPositionBuffer.itemSize = 3;
+    this.vertexPositionBuffer.numItems = spacecraftData.vertexPositions.length / 3;
+
+    this.vertexIndexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.vertexIndexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new WebGLUnsignedShortArray(spacecraftData.indices), gl.STREAM_DRAW);
+    this.vertexIndexBuffer.itemSize = 3;
+    this.vertexIndexBuffer.numItems = spacecraftData.indices.length;
+  }
+
+
+  Spacecraft.prototype.draw = function() {
+    if (this.vertexPositionBuffer == null || this.vertexNormalBuffer == null || this.vertexTextureCoordBuffer == null || this.vertexIndexBuffer == null) {
+      return;
+    }
+
+    gl.uniform1i(shaderProgram.useTexturesUniform, false);
+
+    gl.uniform1f(shaderProgram.materialShininessUniform, parseFloat(document.getElementById("shininess").value));
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexPositionBuffer);
+    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, this.vertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexTextureCoordBuffer);
+    gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, this.vertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexNormalBuffer);
+    gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, this.vertexNormalBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.vertexIndexBuffer);
+    setMatrixUniforms();
+    gl.drawElements(gl.TRIANGLES, this.vertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+  }
+
 
 
   var cameraRotationMatrix;
@@ -344,9 +370,6 @@
   function drawScene() {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
-    if (spacecraftVertexPositionBuffer == null || spacecraftVertexNormalBuffer == null || spacecraftVertexTextureCoordBuffer == null || spacecraftVertexIndexBuffer == null) {
-      return;
-    }
 
     var canvas = document.getElementById("canvas-3d");
     perspective(45, canvas.width / canvas.height, 0.1, 100.0);
@@ -386,36 +409,14 @@
       );
     }
 
-    var texture = document.getElementById("texture").value;
-    gl.uniform1i(shaderProgram.useTexturesUniform, texture != "none");
-
     loadIdentity();
 
     mvTranslate([0, 0, -cameraDistance]);
     mvMatrix = M4x4.mul(mvMatrix, cameraRotationMatrix);
 
-    gl.activeTexture(gl.TEXTURE0);
-    if (texture == "earth") {
-      gl.bindTexture(gl.TEXTURE_2D, earthTexture);
-    } else if (texture == "galvanized") {
-      gl.bindTexture(gl.TEXTURE_2D, galvanizedTexture);
+    for (var i in worldObjects) {
+      worldObjects[i].draw();
     }
-    gl.uniform1i(shaderProgram.samplerUniform, 0);
-
-    gl.uniform1f(shaderProgram.materialShininessUniform, parseFloat(document.getElementById("shininess").value));
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, spacecraftVertexPositionBuffer);
-    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, spacecraftVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, spacecraftVertexTextureCoordBuffer);
-    gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, spacecraftVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, spacecraftVertexNormalBuffer);
-    gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, spacecraftVertexNormalBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, spacecraftVertexIndexBuffer);
-    setMatrixUniforms();
-    gl.drawElements(gl.TRIANGLES, spacecraftVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
   }
 
 
@@ -443,9 +444,12 @@
   }
 
 
+  var worldObjects = [];
+
   function initWorld() {
     initTextures();
-    loadSpacecraft();
+
+    worldObjects.push(new Spacecraft());
   }
 
 
@@ -474,26 +478,11 @@
 
 </script>
 
-
-<style type="text/css">
-    #loadingtext {
-        position:absolute;
-        top:250px;
-        left:150px;
-        font-size:2em;
-        color: white;
-    }
-</style>
-
-
 </head>
 
 
 <body onload="webGLStart();">
   <canvas id="canvas-3d" style="border: none;" width="1000" height="800"></canvas>
-
-  <div id="loadingtext">Loading world...</div>
-
 
   <br/>
 <input type="checkbox" id="specular" checked /> Show specular highlight<br/>
