@@ -286,7 +286,7 @@
     var deltaY = newY - lastMouseY;
     newRotationMatrix = M4x4.rotate(deltaY / 100, [1, 0, 0], newRotationMatrix);
 
-    cameraRotationMatrix = M4x4.mul(cameraRotationMatrix, newRotationMatrix);
+    cameraRotationMatrix = M4x4.mul(newRotationMatrix, cameraRotationMatrix);
 
     lastMouseX = newX
     lastMouseY = newY;
