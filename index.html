@@ -6,6 +6,8 @@
 
 <script type="text/javascript" src="mjs.js"></script>
 
+<script type="text/javascript" src="spacecraft.js"></script>
+
 
 <script id="per-fragment-lighting-fs" type="x-shader/x-fragment">
   varying vec2 vTextureCoord;
@@ -294,76 +296,6 @@
   }
 
 
-  function Spacecraft() {
-    this.load();
-  }
-
-
-  Spacecraft.prototype.load = function() {
-    var request = new XMLHttpRequest();
-    request.open("GET", "spacecraft.json");
-    var spacecraft = this;
-    request.onreadystatechange = function() {
-      if (request.readyState == 4) {
-        spacecraft.onLoaded(JSON.parse(request.responseText));
-      }
-    }
-    request.send();
-  }
-
-
-  Spacecraft.prototype.onLoaded = function(spacecraftData) {
-    this.vertexNormalBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexNormalBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new WebGLFloatArray(spacecraftData.vertexNormals), gl.STATIC_DRAW);
-    this.vertexNormalBuffer.itemSize = 3;
-    this.vertexNormalBuffer.numItems = spacecraftData.vertexNormals.length / 3;
-
-    this.vertexTextureCoordBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexTextureCoordBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new WebGLFloatArray(spacecraftData.vertexTextureCoords), gl.STATIC_DRAW);
-    this.vertexTextureCoordBuffer.itemSize = 2;
-    this.vertexTextureCoordBuffer.numItems = spacecraftData.vertexTextureCoords.length / 2;
-
-    this.vertexPositionBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexPositionBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new WebGLFloatArray(spacecraftData.vertexPositions), gl.STATIC_DRAW);
-    this.vertexPositionBuffer.itemSize = 3;
-    this.vertexPositionBuffer.numItems = spacecraftData.vertexPositions.length / 3;
-
-    this.vertexIndexBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.vertexIndexBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new WebGLUnsignedShortArray(spacecraftData.indices), gl.STREAM_DRAW);
-    this.vertexIndexBuffer.itemSize = 3;
-    this.vertexIndexBuffer.numItems = spacecraftData.indices.length;
-  }
-
-
-  Spacecraft.prototype.draw = function() {
-    if (this.vertexPositionBuffer == null || this.vertexNormalBuffer == null || this.vertexTextureCoordBuffer == null || this.vertexIndexBuffer == null) {
-      return;
-    }
-
-    gl.uniform1i(shaderProgram.useTexturesUniform, false);
-
-    gl.uniform1f(shaderProgram.materialShininessUniform, parseFloat(document.getElementById("shininess").value));
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexPositionBuffer);
-    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, this.vertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexTextureCoordBuffer);
-    gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, this.vertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexNormalBuffer);
-    gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, this.vertexNormalBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.vertexIndexBuffer);
-    setMatrixUniforms();
-    gl.drawElements(gl.TRIANGLES, this.vertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
-  }
-
-
-
   var cameraRotationMatrix;
   var cameraDistance;
 
@@ -415,7 +347,7 @@
     mvMatrix = M4x4.mul(mvMatrix, cameraRotationMatrix);
 
     for (var i in worldObjects) {
-      worldObjects[i].draw();
+      worldObjects[i].draw(shaderProgram);
     }
   }
 
@@ -449,7 +381,7 @@
   function initWorld() {
     initTextures();
 
-    worldObjects.push(new Spacecraft());
+    worldObjects.push(new Spacecraft(gl));
   }
 
 
@@ -495,14 +427,6 @@ Texture:
 </select>
 
 <br/>
-<h2>Material:</h2>
-
-<table style="border: 0; padding: 10px;">
-<tr>
-<td><b>Shininess:</b>
-<td><input type="text" id="shininess" value="32.0" />
-</tr>
-</table>
 
 <h2>Point light:</h2>
 
