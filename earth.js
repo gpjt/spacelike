@@ -48,7 +48,7 @@ function createSphereMesh(gl) {
       var y = cosTheta;
       var z = sinPhi * sinTheta;
       var u = 1 - (longNumber / longitudeBands);
-      var v = latNumber / latitudeBands;
+      var v = 1 - (latNumber / latitudeBands);
 
       normalData.push(x);
       normalData.push(y);
