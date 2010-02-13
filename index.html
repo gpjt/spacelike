@@ -6,6 +6,7 @@
 
 <script type="text/javascript" src="mjs.js"></script>
 
+<script type="text/javascript" src="earth.js"></script>
 <script type="text/javascript" src="spacecraft.js"></script>
 
 
@@ -91,6 +92,10 @@
     try {
       gl = canvas.getContext("experimental-webgl");
       gl.viewport(0, 0, canvas.width, canvas.height);
+
+      gl.mvPushMatrix = mvPushMatrix;
+      gl.mvPopMatrix = mvPopMatrix;
+      gl.mvTranslate = mvTranslate;
     } catch(e) {
     }
     if (!gl) {
@@ -175,50 +180,11 @@
   }
 
 
-  function handleLoadedTexture(image, texture) {
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, image);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
-    gl.generateMipmap(gl.TEXTURE_2D);
-
-    gl.bindTexture(gl.TEXTURE_2D, null);
-  }
-
-
-  var earthTexture;
-  var earthImage;
-  var galvanizedTexture;
-  var galvanizedImage;
-  function initTextures() {
-    earthTexture = gl.createTexture();
-    earthImage = new Image();
-    earthImage.onload = function() {
-      handleLoadedTexture(earthImage, earthTexture)
-    }
-
-    earthImage.src = "earth.jpg";
-
-    galvanizedTexture = gl.createTexture();
-    galvanizedImage = new Image();
-    galvanizedImage.onload = function() {
-      handleLoadedTexture(galvanizedImage, galvanizedTexture)
-    }
-
-    galvanizedImage.src = "arroway.de_metal+structure+06_d100_flat.jpg";
-  }
-
-
   var mvMatrix;
   var mvMatrixStack = [];
 
-  function mvPushMatrix(m) {
-    if (m) {
-      mvMatrixStack.push(m.dup());
-      mvMatrix = m.dup();
-    } else {
-      mvMatrixStack.push(mvMatrix.dup());
-    }
+  function mvPushMatrix() {
+    mvMatrixStack.push(M4x4.clone(mvMatrix));
   }
 
   function mvPopMatrix() {
@@ -304,7 +270,7 @@
 
 
     var canvas = document.getElementById("canvas-3d");
-    perspective(45, canvas.width / canvas.height, 0.1, 100.0);
+    perspective(45, canvas.width / canvas.height, 0.1, 1000000.0);
 
     var specularHighlights = document.getElementById("specular").checked;
     gl.uniform1i(shaderProgram.showSpecularHighlightsUniform, specularHighlights);
@@ -347,7 +313,7 @@
     mvMatrix = M4x4.mul(mvMatrix, cameraRotationMatrix);
 
     for (var i in worldObjects) {
-      worldObjects[i].draw(shaderProgram);
+      worldObjects[i].draw(shaderProgram, playerAvatar.location);
     }
   }
 
@@ -377,11 +343,12 @@
 
 
   var worldObjects = [];
-
+  var playerAvatar;
   function initWorld() {
-    initTextures();
-
-    worldObjects.push(new Spacecraft(gl));
+    var earth = new Earth(gl, [0, 0, 0]);
+    worldObjects.push(earth);
+    playerAvatar = new Spacecraft(gl, earth.offset([0, 0, 12000]));
+    worldObjects.push(playerAvatar);
   }
 
 
@@ -419,13 +386,6 @@
   <br/>
 <input type="checkbox" id="specular" checked /> Show specular highlight<br/>
 <input type="checkbox" id="lighting" checked /> Use lighting<br/>
-Texture:
-<select id="texture">
-  <option value="none">None</option>
-  <option selected value="galvanized">Galvanized</option>
-  <option value="earth">Earth</option>
-</select>
-
 <br/>
 
 <h2>Point light:</h2>
@@ -463,7 +423,6 @@ Texture:
 
 
 <br/>
-Galvanized texture courtesy of <a href="http://www.arroway-textures.com/">Arroway Textures</a>.<br/>
 Earth texture courtesy of <a href="http://www.esa.int/esaEO/SEMGSY2IU7E_index_0.html">the European Space Agency/Envisat</a>.<br/>
 <br/>
 

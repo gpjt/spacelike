@@ -1,6 +1,7 @@
-function Spacecraft(gl) {
+function Spacecraft(gl, location) {
   this.gl = gl;
   this.shininess = 64;
+  this.location = location;
   this.load();
 }
 
@@ -19,51 +20,64 @@ Spacecraft.prototype.load = function() {
 
 
 Spacecraft.prototype.onLoaded = function(spacecraftData) {
-  this.vertexNormalBuffer = this.gl.createBuffer();
-  this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexNormalBuffer);
+  var mesh = {}
+  
+  mesh.vertexNormalBuffer = this.gl.createBuffer();
+  this.gl.bindBuffer(this.gl.ARRAY_BUFFER, mesh.vertexNormalBuffer);
   this.gl.bufferData(this.gl.ARRAY_BUFFER, new WebGLFloatArray(spacecraftData.vertexNormals), this.gl.STATIC_DRAW);
-  this.vertexNormalBuffer.itemSize = 3;
-  this.vertexNormalBuffer.numItems = spacecraftData.vertexNormals.length / 3;
+  mesh.vertexNormalBuffer.itemSize = 3;
+  mesh.vertexNormalBuffer.numItems = spacecraftData.vertexNormals.length / 3;
 
-  this.vertexTextureCoordBuffer = this.gl.createBuffer();
-  this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexTextureCoordBuffer);
+  mesh.vertexTextureCoordBuffer = this.gl.createBuffer();
+  this.gl.bindBuffer(this.gl.ARRAY_BUFFER, mesh.vertexTextureCoordBuffer);
   this.gl.bufferData(this.gl.ARRAY_BUFFER, new WebGLFloatArray(spacecraftData.vertexTextureCoords), this.gl.STATIC_DRAW);
-  this.vertexTextureCoordBuffer.itemSize = 2;
-  this.vertexTextureCoordBuffer.numItems = spacecraftData.vertexTextureCoords.length / 2;
+  mesh.vertexTextureCoordBuffer.itemSize = 2;
+  mesh.vertexTextureCoordBuffer.numItems = spacecraftData.vertexTextureCoords.length / 2;
 
-  this.vertexPositionBuffer = this.gl.createBuffer();
-  this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexPositionBuffer);
+  mesh.vertexPositionBuffer = this.gl.createBuffer();
+  this.gl.bindBuffer(this.gl.ARRAY_BUFFER, mesh.vertexPositionBuffer);
   this.gl.bufferData(this.gl.ARRAY_BUFFER, new WebGLFloatArray(spacecraftData.vertexPositions), this.gl.STATIC_DRAW);
-  this.vertexPositionBuffer.itemSize = 3;
-  this.vertexPositionBuffer.numItems = spacecraftData.vertexPositions.length / 3;
+  mesh.vertexPositionBuffer.itemSize = 3;
+  mesh.vertexPositionBuffer.numItems = spacecraftData.vertexPositions.length / 3;
 
-  this.vertexIndexBuffer = this.gl.createBuffer();
-  this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.vertexIndexBuffer);
+  mesh.vertexIndexBuffer = this.gl.createBuffer();
+  this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, mesh.vertexIndexBuffer);
   this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new WebGLUnsignedShortArray(spacecraftData.indices), this.gl.STREAM_DRAW);
-  this.vertexIndexBuffer.itemSize = 3;
-  this.vertexIndexBuffer.numItems = spacecraftData.indices.length;
+  mesh.vertexIndexBuffer.itemSize = 3;
+  mesh.vertexIndexBuffer.numItems = spacecraftData.indices.length;
+  
+  this.mesh = mesh;
 }
 
 
-Spacecraft.prototype.draw = function(shaderProgram) {
-  if (this.vertexPositionBuffer == null || this.vertexNormalBuffer == null || this.vertexTextureCoordBuffer == null || this.vertexIndexBuffer == null) {
+Spacecraft.prototype.draw = function(shaderProgram, offset) {
+  if (this.mesh == null) {
     return;
   }
+  
+  this.gl.mvPushMatrix();
+  
+  var x = this.location[0] - offset[0];
+  var y = this.location[1] - offset[1];
+  var z = this.location[2] - offset[2];
+  this.gl.mvTranslate([x, y, z]);
 
   this.gl.uniform1i(shaderProgram.useTexturesUniform, false);
 
   this.gl.uniform1f(shaderProgram.materialShininessUniform, this.shininess);
 
-  this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexPositionBuffer);
-  this.gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, this.vertexPositionBuffer.itemSize, this.gl.FLOAT, false, 0, 0);
+  this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.mesh.vertexPositionBuffer);
+  this.gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, this.mesh.vertexPositionBuffer.itemSize, this.gl.FLOAT, false, 0, 0);
 
-  this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexTextureCoordBuffer);
-  this.gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, this.vertexTextureCoordBuffer.itemSize, this.gl.FLOAT, false, 0, 0);
+  this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.mesh.vertexTextureCoordBuffer);
+  this.gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, this.mesh.vertexTextureCoordBuffer.itemSize, this.gl.FLOAT, false, 0, 0);
 
-  this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexNormalBuffer);
-  this.gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, this.vertexNormalBuffer.itemSize, this.gl.FLOAT, false, 0, 0);
+  this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.mesh.vertexNormalBuffer);
+  this.gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, this.mesh.vertexNormalBuffer.itemSize, this.gl.FLOAT, false, 0, 0);
 
-  this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.vertexIndexBuffer);
+  this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.mesh.vertexIndexBuffer);
   setMatrixUniforms();
-  this.gl.drawElements(this.gl.TRIANGLES, this.vertexIndexBuffer.numItems, this.gl.UNSIGNED_SHORT, 0);
+  this.gl.drawElements(this.gl.TRIANGLES, this.mesh.vertexIndexBuffer.numItems, this.gl.UNSIGNED_SHORT, 0);
+  
+  this.gl.mvPopMatrix();
 }
