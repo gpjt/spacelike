@@ -2,6 +2,8 @@ function Spacecraft(gl, location) {
   this.gl = gl;
   this.shininess = 64;
   this.location = location;
+  this.acceleration = 0;
+  this.speed = 0;
   this.load();
 }
 
@@ -80,4 +82,14 @@ Spacecraft.prototype.draw = function(shaderProgram, offset) {
   this.gl.drawElements(this.gl.TRIANGLES, this.mesh.vertexIndexBuffer.numItems, this.gl.UNSIGNED_SHORT, 0);
   
   this.gl.mvPopMatrix();
+}
+
+
+
+Spacecraft.prototype.animate = function(elapsed) {
+  elapsed /= 1000;
+  this.acceleration += 0.00981 * elapsed;
+  this.speed += this.acceleration * elapsed;
+  var distanceTraveled = (this.speed * elapsed) + 0.5 * (this.acceleration * elapsed ^ 2);
+  this.location = [this.location[0], this.location[1], this.location[2] - distanceTraveled];
 }

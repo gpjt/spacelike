@@ -96,6 +96,7 @@
       gl.mvPushMatrix = mvPushMatrix;
       gl.mvPopMatrix = mvPopMatrix;
       gl.mvTranslate = mvTranslate;
+      gl.mvRotate = mvRotate;
     } catch(e) {
     }
     if (!gl) {
@@ -323,6 +324,10 @@
     var timeNow = new Date().getTime();
     if (lastTime != 0) {
       var elapsed = timeNow - lastTime;
+
+      for (var i in worldObjects) {
+        worldObjects[i].animate(elapsed);
+      }
     }
     lastTime = timeNow;
   }

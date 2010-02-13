@@ -12,6 +12,8 @@ function Earth(gl, location) {
   this.texture = texture;
   
   this.mesh = createSphereMesh(gl);
+  
+  this.rotateAngle = 0;
 }
 
 
@@ -117,6 +119,8 @@ Earth.prototype.draw = function(shaderProgram, offset) {
   var y = this.location[1] - offset[1];
   var z = this.location[2] - offset[2];
   this.gl.mvTranslate([x, y, z]);
+  
+  this.gl.mvRotate(this.rotateAngle, [0, 1, 0]);
 
   this.gl.uniform1i(shaderProgram.useTexturesUniform, true);
 
@@ -148,4 +152,9 @@ Earth.prototype.offset = function(location) {
   var y = location[1] - this.location[1];
   var z = location[2] - this.location[2];
   return [x, y, z];
-};
+}
+
+
+Earth.prototype.animate = function(elapsed) {
+  this.rotateAngle += (10 * elapsed) / 1000;
+}
