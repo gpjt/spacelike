@@ -64,9 +64,9 @@ Spacecraft.prototype.draw = function(shaderProgram, offset) {
   var z = this.location[2] - offset[2];
   this.gl.mvTranslate([x, y, z]);
 
-  this.gl.uniform1i(shaderProgram.useTexturesUniform, false);
-
-  this.gl.uniform1f(shaderProgram.materialShininessUniform, this.shininess);
+  this.gl.uniform1i(shaderProgram.useColorMapUniform, false);
+  this.gl.uniform1i(shaderProgram.useSpecularMapUniform, false);
+  this.gl.uniform1f(shaderProgram.shininessUniform, this.shininess);
 
   this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.mesh.vertexPositionBuffer);
   this.gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, this.mesh.vertexPositionBuffer.itemSize, this.gl.FLOAT, false, 0, 0);

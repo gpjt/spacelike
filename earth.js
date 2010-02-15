@@ -3,13 +3,21 @@ function Earth(gl, location) {
   this.shininess = 32;
   this.location = location;
 
-  var texture = gl.createTexture();
-  texture.image = new Image();
-  texture.image.onload = function() {
-    handleLoadedTexture(texture)
+  var colorMap = gl.createTexture();
+  colorMap.image = new Image();
+  colorMap.image.onload = function() {
+    handleLoadedTexture(colorMap)
   };
-  texture.image.src = "earth.jpg";
-  this.texture = texture;
+  colorMap.image.src = "earth.jpg";
+  this.colorMap = colorMap;
+  
+  var specularMap = gl.createTexture();
+  specularMap.image = new Image();
+  specularMap.image.onload = function() {
+    handleLoadedTexture(specularMap)
+  };
+  specularMap.image.src = "earth-specular.gif";
+  this.specularMap = specularMap;
   
   this.mesh = createSphereMesh(gl);
   
@@ -122,13 +130,15 @@ Earth.prototype.draw = function(shaderProgram, offset) {
   
   this.gl.mvRotate(this.rotateAngle, [0, 1, 0]);
 
-  this.gl.uniform1i(shaderProgram.useTexturesUniform, true);
-
+  this.gl.uniform1i(shaderProgram.useColorMapUniform, true);
   this.gl.activeTexture(gl.TEXTURE0);
-  this.gl.bindTexture(gl.TEXTURE_2D, this.texture);
-  this.gl.uniform1i(shaderProgram.samplerUniform, 0);
-
-  this.gl.uniform1f(shaderProgram.materialShininessUniform, this.shininess);
+  this.gl.bindTexture(gl.TEXTURE_2D, this.colorMap);
+  this.gl.uniform1i(shaderProgram.colorMapSamplerUniform, 0);
+  
+  this.gl.uniform1i(shaderProgram.useSpecularMapUniform, true);
+  this.gl.activeTexture(gl.TEXTURE1);
+  this.gl.bindTexture(gl.TEXTURE_2D, this.specularMap);
+  this.gl.uniform1i(shaderProgram.specularMapSamplerUniform, 1);
 
   this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.mesh.vertexPositionBuffer);
   this.gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, this.mesh.vertexPositionBuffer.itemSize, this.gl.FLOAT, false, 0, 0);
