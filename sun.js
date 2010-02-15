@@ -5,6 +5,21 @@ function Sun(gl, location) {
 }
 
 
+function M4x4_transform(m, v, r) {
+  if (r == undefined) {
+    r = new MJS_FLOAT_ARRAY_TYPE(3);
+  }
+  
+  var w = 1;
+  r[0] = v[0] * m[0] + v[1] * m[4] + v[2] * m[8] +  w * m[12];
+  r[1] = v[0] * m[1] + v[1] * m[5] + v[2] * m[9] +  w * m[13];
+  r[2] = v[0] * m[2] + v[1] * m[6] + v[2] * m[10] +  w * m[14];
+  
+  return r
+}
+M4x4.transform = M4x4_transform;
+
+
 Sun.prototype.draw = function(shaderProgram, offset) {
   if (this.mesh == null) {
     return;
@@ -17,7 +32,8 @@ Sun.prototype.draw = function(shaderProgram, offset) {
   
   gl.uniform1i(shaderProgram.useLightingUniform, true);
 
-  gl.uniform3f(shaderProgram.pointLightingLocationUniform, location[0], location[1], location[2]);
+  var eyeSpaceLocation = M4x4.transform(this.gl.mvMatrix, V3.$(0, 0, 0));
+  gl.uniform3f(shaderProgram.pointLightingLocationUniform, eyeSpaceLocation[0], eyeSpaceLocation[1], eyeSpaceLocation[2]);
   gl.uniform3f(shaderProgram.pointLightingSpecularColorUniform, 0.8, 0.8, 0.8);
   gl.uniform3f(shaderProgram.pointLightingDiffuseColorUniform, 0.8, 0.8, 0.8);
 

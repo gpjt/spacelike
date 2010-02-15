@@ -107,6 +107,7 @@
       gl.mvPopMatrix = mvPopMatrix;
       gl.mvTranslate = mvTranslate;
       gl.mvRotate = mvRotate;
+      gl.mvMatrixStack = [];
     } catch(e) {
     }
     if (!gl) {
@@ -198,33 +199,30 @@
   }
 
 
-  var mvMatrix;
-  var mvMatrixStack = [];
-
   function mvPushMatrix() {
-    mvMatrixStack.push(M4x4.clone(mvMatrix));
+    gl.mvMatrixStack.push(M4x4.clone(gl.mvMatrix));
   }
 
   function mvPopMatrix() {
-    if (mvMatrixStack.length == 0) {
+    if (gl.mvMatrixStack.length == 0) {
       throw "Invalid popMatrix!";
     }
-    mvMatrix = mvMatrixStack.pop();
-    return mvMatrix;
+    gl.mvMatrix = gl.mvMatrixStack.pop();
+    return gl.mvMatrix;
   }
 
   function loadIdentity() {
-    mvMatrix = M4x4.clone(M4x4.I);
+    gl.mvMatrix = M4x4.clone(M4x4.I);
   }
 
 
   function mvTranslate(v) {
-    mvMatrix = M4x4.translate(v, mvMatrix);
+    gl.mvMatrix = M4x4.translate(v, gl.mvMatrix);
   }
 
 
   function mvRotate(angle, v) {
-    mvMatrix = M4x4.rotate(angle * Math.PI / 180, v, mvMatrix);
+    gl.mvMatrix = M4x4.rotate(angle * Math.PI / 180, v, gl.mvMatrix);
   }
 
 
@@ -236,9 +234,9 @@
 
   function setMatrixUniforms() {
     gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
-    gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
+    gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, gl.mvMatrix);
 
-    var normalMatrix = M4x4.inverseOrthonormal(mvMatrix);
+    var normalMatrix = M4x4.inverseOrthonormal(gl.mvMatrix);
     M4x4.transpose(normalMatrix, normalMatrix);
     gl.uniformMatrix4fv(shaderProgram.nMatrixUniform, false, normalMatrix);
   }
@@ -295,7 +293,7 @@
     loadIdentity();
 
     mvTranslate([0, 0, -cameraDistance]);
-    mvMatrix = M4x4.mul(mvMatrix, cameraRotationMatrix);
+    gl.mvMatrix = M4x4.mul(gl.mvMatrix, cameraRotationMatrix);
 
     for (var i in worldObjects) {
       worldObjects[i].draw(shaderProgram, playerAvatar.location);
