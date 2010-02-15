@@ -17,6 +17,13 @@ Sun.prototype.draw = function(shaderProgram, offset) {
   var z = this.location[2] - offset[2];
   this.gl.mvTranslate([x, y, z]);
   
+  gl.uniform1i(shaderProgram.useLightingUniform, true);
+
+  gl.uniform3f(shaderProgram.pointLightingLocationUniform, x, y, z);
+  gl.uniform3f(shaderProgram.pointLightingSpecularColorUniform, 0.8, 0.8, 0.8);
+  gl.uniform3f(shaderProgram.pointLightingDiffuseColorUniform, 0.8, 0.8, 0.8);
+
+  
   this.gl.uniform1i(shaderProgram.useColorMapUniform, false);
   this.gl.uniform4f(shaderProgram.colorUniform, 1.0, 1.0, 1.0, 1.0);
   this.gl.uniform1i(shaderProgram.useLightingUniform, false);
