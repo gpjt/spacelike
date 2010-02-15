@@ -1,7 +1,7 @@
-function createSphereMesh(gl) {
+function createSphereMesh(gl, radius) {
   var latitudeBands = 30;
   var longitudeBands = 30;
-  var radius = 6371 / 2;
+  var radius = radius;
 
   var vertexPositionData = [];
   var normalData = [];

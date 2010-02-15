@@ -7,6 +7,7 @@
 <script type="text/javascript" src="mjs.js"></script>
 
 <script type="text/javascript" src="sphere.js"></script>
+<script type="text/javascript" src="sun.js"></script>
 <script type="text/javascript" src="earth.js"></script>
 <script type="text/javascript" src="spacecraft.js"></script>
 
@@ -18,6 +19,7 @@
 
   uniform bool uUseColorMap;
   uniform sampler2D uColorMapSampler;
+  uniform vec4 uColor;
 
   uniform bool uUseSpecularMap;
   uniform sampler2D uSpecularMapSampler;
@@ -64,7 +66,7 @@
     if (uUseColorMap) {
       fragmentColor = texture2D(uColorMapSampler, vec2(vTextureCoord.s, 1.0 - vTextureCoord.t));
     } else {
-      fragmentColor = vec4(1.0, 1.0, 1.0, 1.0);
+      fragmentColor = uColor;
     }
     gl_FragColor = vec4(fragmentColor.rgb * lightWeighting, fragmentColor.a);
   }
@@ -180,6 +182,7 @@
 
     shaderProgram.useColorMapUniform = gl.getUniformLocation(shaderProgram, "uUseColorMap");
     shaderProgram.colorMapSamplerUniform = gl.getUniformLocation(shaderProgram, "uColorMapSampler");
+    shaderProgram.colorUniform = gl.getUniformLocation(shaderProgram, "uColor");
 
     shaderProgram.useSpecularMapUniform = gl.getUniformLocation(shaderProgram, "uUseSpecularMap");
     shaderProgram.specularMapSamplerUniform = gl.getUniformLocation(shaderProgram, "uSpecularMapSampler");
@@ -285,7 +288,7 @@
 
 
     var canvas = document.getElementById("canvas-3d");
-    perspective(45, canvas.width / canvas.height, 0.1, 1000000.0);
+    perspective(45, canvas.width / canvas.height, 0.1, 2000000000.0);
 
     var specularHighlights = document.getElementById("specular").checked;
     gl.uniform1i(shaderProgram.showSpecularHighlightsUniform, specularHighlights);
@@ -364,8 +367,12 @@
   var worldObjects = [];
   var playerAvatar;
   function initWorld() {
-    var earth = new Earth(gl, [0, 0, 0]);
+    var sun = new Sun(gl, [0, 0, 0]);
+    worldObjects.push(sun);
+
+    var earth = new Earth(gl, sun.offset([149597887, 0, 0]));
     worldObjects.push(earth);
+
     playerAvatar = new Spacecraft(gl, earth.offset([0, 0, 12000]));
     worldObjects.push(playerAvatar);
   }

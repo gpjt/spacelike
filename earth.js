@@ -19,7 +19,7 @@ function Earth(gl, location) {
   specularMap.image.src = "earth-specular.gif";
   this.specularMap = specularMap;
   
-  this.mesh = createSphereMesh(gl);
+  this.mesh = createSphereMesh(gl, 6371);
   
   this.rotateAngle = 0;
 }
@@ -46,9 +46,12 @@ Earth.prototype.draw = function(shaderProgram, offset) {
   var x = this.location[0] - offset[0];
   var y = this.location[1] - offset[1];
   var z = this.location[2] - offset[2];
+  
   this.gl.mvTranslate([x, y, z]);
   
   this.gl.mvRotate(this.rotateAngle, [0, 1, 0]);
+  
+  this.gl.uniform1i(shaderProgram.useLightingUniform, true);
 
   this.gl.uniform1i(shaderProgram.useColorMapUniform, true);
   this.gl.activeTexture(gl.TEXTURE0);
@@ -78,9 +81,9 @@ Earth.prototype.draw = function(shaderProgram, offset) {
 
 
 Earth.prototype.offset = function(location) {
-  var x = location[0] - this.location[0];
-  var y = location[1] - this.location[1];
-  var z = location[2] - this.location[2];
+  var x = location[0] + this.location[0];
+  var y = location[1] + this.location[1];
+  var z = location[2] + this.location[2];
   return [x, y, z];
 }
 
