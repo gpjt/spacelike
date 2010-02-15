@@ -43,11 +43,7 @@ Earth.prototype.draw = function(shaderProgram, offset) {
   
   this.gl.mvPushMatrix();
   
-  var x = this.location[0] - offset[0];
-  var y = this.location[1] - offset[1];
-  var z = this.location[2] - offset[2];
-  
-  this.gl.mvTranslate([x, y, z]);
+  this.gl.mvTranslate(V3.sub(this.location, offset));
   
   this.gl.mvRotate(this.rotateAngle, [0, 1, 0]);
   
@@ -81,10 +77,7 @@ Earth.prototype.draw = function(shaderProgram, offset) {
 
 
 Earth.prototype.offset = function(location) {
-  var x = location[0] + this.location[0];
-  var y = location[1] + this.location[1];
-  var z = location[2] + this.location[2];
-  return [x, y, z];
+  return V3.add(location, this.location);
 }
 
 

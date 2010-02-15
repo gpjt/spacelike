@@ -12,14 +12,12 @@ Sun.prototype.draw = function(shaderProgram, offset) {
   
   this.gl.mvPushMatrix();
   
-  var x = this.location[0] - offset[0];
-  var y = this.location[1] - offset[1];
-  var z = this.location[2] - offset[2];
-  this.gl.mvTranslate([x, y, z]);
+  var location = V3.sub(this.location, offset);
+  this.gl.mvTranslate(location);
   
   gl.uniform1i(shaderProgram.useLightingUniform, true);
 
-  gl.uniform3f(shaderProgram.pointLightingLocationUniform, x, y, z);
+  gl.uniform3f(shaderProgram.pointLightingLocationUniform, location[0], location[1], location[2]);
   gl.uniform3f(shaderProgram.pointLightingSpecularColorUniform, 0.8, 0.8, 0.8);
   gl.uniform3f(shaderProgram.pointLightingDiffuseColorUniform, 0.8, 0.8, 0.8);
 
@@ -47,10 +45,7 @@ Sun.prototype.draw = function(shaderProgram, offset) {
 
 
 Sun.prototype.offset = function(location) {
-  var x = location[0] + this.location[0];
-  var y = location[1] + this.location[1];
-  var z = location[2] + this.location[2];
-  return [x, y, z];
+  return V3.add(location, this.location);
 }
 
 

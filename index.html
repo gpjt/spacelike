@@ -334,13 +334,13 @@
   var worldObjects = [];
   var playerAvatar;
   function initWorld() {
-    var sun = new Sun(gl, [0, 0, 0]);
+    var sun = new Sun(gl, V3.$(0, 0, 0));
     worldObjects.push(sun);
 
-    var earth = new Earth(gl, sun.offset([149597887, 0, 0]));
+    var earth = new Earth(gl, sun.offset(V3.$(149597887, 0, 0)));
     worldObjects.push(earth);
 
-    playerAvatar = new Spacecraft(gl, earth.offset([0, 0, 12000]));
+    playerAvatar = new Spacecraft(gl, earth.offset(V3.$(0, 0, 12000)));
     worldObjects.push(playerAvatar);
   }
 

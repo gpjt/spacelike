@@ -59,10 +59,7 @@ Spacecraft.prototype.draw = function(shaderProgram, offset) {
   
   this.gl.mvPushMatrix();
   
-  var x = this.location[0] - offset[0];
-  var y = this.location[1] - offset[1];
-  var z = this.location[2] - offset[2];
-  this.gl.mvTranslate([x, y, z]);
+  this.gl.mvTranslate(V3.sub(this.location, offset));
 
   this.gl.uniform1i(shaderProgram.useLightingUniform, true);
 
