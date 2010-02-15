@@ -76,11 +76,6 @@ Earth.prototype.draw = function(shaderProgram, offset) {
 }
 
 
-Earth.prototype.offset = function(location) {
-  return V3.add(location, this.location);
-}
-
-
 Earth.prototype.animate = function(elapsed) {
   this.rotateAngle += (10 * elapsed) / 1000;
 }

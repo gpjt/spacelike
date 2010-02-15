@@ -60,10 +60,5 @@ Sun.prototype.draw = function(shaderProgram, offset) {
 }
 
 
-Sun.prototype.offset = function(location) {
-  return V3.add(location, this.location);
-}
-
-
 Sun.prototype.animate = function(elapsed) {
 }

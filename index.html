@@ -226,14 +226,13 @@
   }
 
 
-  var pMatrix;
   function perspective(fovy, aspect, znear, zfar) {
-    pMatrix = M4x4.makePerspective(fovy, aspect, znear, zfar);
+    gl.pMatrix = M4x4.makePerspective(fovy, aspect, znear, zfar);
   }
 
 
   function setMatrixUniforms() {
-    gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
+    gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, gl.pMatrix);
     gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, gl.mvMatrix);
 
     var normalMatrix = M4x4.inverseOrthonormal(gl.mvMatrix);
@@ -335,10 +334,10 @@
     var sun = new Sun(gl, V3.$(0, 0, 0));
     worldObjects.push(sun);
 
-    var earth = new Earth(gl, sun.offset(V3.$(149597887, 0, 0)));
+    var earth = new Earth(gl, V3.add(V3.$(149597887, 0, 0), sun.location));
     worldObjects.push(earth);
 
-    playerAvatar = new Spacecraft(gl, earth.offset(V3.$(0, 0, 12000)));
+    playerAvatar = new Spacecraft(gl, V3.add(V3.$(0, 0, 12000), earth.location));
     worldObjects.push(playerAvatar);
   }
 
