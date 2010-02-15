@@ -60,13 +60,17 @@ Spacecraft.prototype.draw = function(shaderProgram, offset) {
   this.gl.mvPushMatrix();
   
   this.gl.mvTranslate(V3.sub(this.location, offset));
-
+  
   this.gl.uniform1i(shaderProgram.useLightingUniform, true);
 
   this.gl.uniform1i(shaderProgram.useColorMapUniform, false);
   this.gl.uniform4f(shaderProgram.colorUniform, 1.0, 1.0, 1.0, 1.0);
   this.gl.uniform1i(shaderProgram.useSpecularMapUniform, false);
   this.gl.uniform1f(shaderProgram.shininessUniform, this.shininess);
+
+  // Spacecraft Blender model is approx. 13 units long, which is 13km in our world space --
+  // we want it to be about 130m, so we use a scale matrix.
+  this.gl.mvScale(0.01, 0.01, 0.01);
 
   this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.mesh.vertexPositionBuffer);
   this.gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, this.mesh.vertexPositionBuffer.itemSize, this.gl.FLOAT, false, 0, 0);

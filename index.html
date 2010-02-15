@@ -107,6 +107,7 @@
       gl.mvPopMatrix = mvPopMatrix;
       gl.mvTranslate = mvTranslate;
       gl.mvRotate = mvRotate;
+      gl.mvScale = mvScale;
       gl.mvMatrixStack = [];
     } catch(e) {
     }
@@ -226,6 +227,11 @@
   }
 
 
+  function mvScale(x, y, z) {
+    gl.mvMatrix = M4x4.scale3(x, y, z, gl.mvMatrix);
+  }
+
+
   function perspective(fovy, aspect, znear, zfar) {
     gl.pMatrix = M4x4.makePerspective(fovy, aspect, znear, zfar);
   }
@@ -256,13 +262,13 @@
   function handleKeys() {
     if (currentlyPressedKeys[33]) {
       // Page Up
-      if (cameraDistance > 15) {
-        cameraDistance -= 0.1;
+      if (cameraDistance > 0.17) {
+        cameraDistance -= 0.01;
       }
     }
     if (currentlyPressedKeys[34]) {
       // Page Down
-      cameraDistance += 0.1;
+      cameraDistance += 0.01;
     }
     if (currentlyPressedKeys[37]) {
       // Left cursor key
@@ -367,7 +373,7 @@
 
   function initCamera() {
     cameraRotationMatrix = M4x4.makeRotate(10 * Math.PI / 180, [1, 0, 0]);
-    cameraDistance = 30;
+    cameraDistance = 0.3;
   }
 
 
