@@ -34,8 +34,8 @@ Sun.prototype.draw = function(shaderProgram, offset) {
 
   var eyeSpaceLocation = M4x4.transform(this.gl.mvMatrix, V3.$(0, 0, 0));
   gl.uniform3f(shaderProgram.pointLightingLocationUniform, eyeSpaceLocation[0], eyeSpaceLocation[1], eyeSpaceLocation[2]);
-  gl.uniform3f(shaderProgram.pointLightingSpecularColorUniform, 0.8, 0.8, 0.8);
-  gl.uniform3f(shaderProgram.pointLightingDiffuseColorUniform, 0.8, 0.8, 0.8);
+  gl.uniform3f(shaderProgram.pointLightingSpecularColorUniform, 2, 2, 2);
+  gl.uniform3f(shaderProgram.pointLightingDiffuseColorUniform, 1, 1, 1);
 
   
   this.gl.uniform1i(shaderProgram.useColorMapUniform, false);
