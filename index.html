@@ -7,6 +7,8 @@
 <script type="text/javascript" src="mjs.js"></script>
 
 <script type="text/javascript" src="sphere.js"></script>
+<script type="text/javascript" src="texture.js"></script>
+<script type="text/javascript" src="skysphere.js"></script>
 <script type="text/javascript" src="sun.js"></script>
 <script type="text/javascript" src="earth.js"></script>
 <script type="text/javascript" src="spacecraft.js"></script>
@@ -329,7 +331,7 @@
   var cameraDistance;
 
   function drawScene() {
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 
     var canvas = document.getElementById("canvas-3d");
@@ -341,6 +343,8 @@
 
     mvTranslate([0, 0, -cameraDistance]);
     gl.mvMatrix = M4x4.mul(gl.mvMatrix, cameraRotationMatrix);
+
+    skySphere.draw(shaderProgram, cameraDistance + 1);
 
     for (var i in worldObjects) {
       worldObjects[i].draw(shaderProgram, playerAvatar.location);
@@ -378,15 +382,18 @@
 
 
   var worldObjects = [];
+  var skySphere;
   var playerAvatar;
   function initWorld() {
+    skySphere = new SkySphere(gl);
+
     var sun = new Sun(gl, V3.$(0, 0, 0));
     worldObjects.push(sun);
 
     var earth = new Earth(gl, V3.add(V3.$(149597887, 0, 0), sun.location));
     worldObjects.push(earth);
 
-    playerAvatar = new Spacecraft(gl, V3.add(V3.$(0, 0, 12000), earth.location));
+    playerAvatar = new Spacecraft(gl, V3.add(V3.$(0, 0, 18000), earth.location));
     worldObjects.push(playerAvatar);
   }
 
