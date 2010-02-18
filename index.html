@@ -367,10 +367,16 @@
 
 
 
+  function updateDebugFields() {
+    document.getElementById("cameraDistance").innerHTML = cameraDistance;sett
+  }
+
+
   function tick() {
     handleKeys();
     drawScene();
     animate();
+    updateDebugFields();
   }
 
 
@@ -431,6 +437,8 @@
 
 <body onload="webGLStart();">
   <canvas id="canvas-3d" style="border: none;" width="1000" height="800"></canvas>
+
+<p>Camera distance: <span id="cameraDistance"></span></p>
 
   <br/>
 Earth texture courtesy of <a href="http://www.esa.int/esaEO/SEMGSY2IU7E_index_0.html">the European Space Agency/Envisat</a>.<br/>

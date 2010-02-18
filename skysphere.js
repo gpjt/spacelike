@@ -10,7 +10,11 @@ SkySphere.prototype.draw = function(shaderProgram, size) {
     return;
   }
   
+  this.gl.mvPushMatrix();
+  
   this.gl.uniform1i(shaderProgram.useLightingUniform, false);
+
+  this.gl.mvScale(size, size, size);
 
   this.gl.uniform1i(shaderProgram.useColorMapUniform, true);
   this.gl.activeTexture(gl.TEXTURE0);
@@ -32,5 +36,9 @@ SkySphere.prototype.draw = function(shaderProgram, size) {
   setMatrixUniforms();
   this.gl.drawElements(this.gl.TRIANGLES, this.mesh.vertexIndexBuffer.numItems, this.gl.UNSIGNED_SHORT, 0);
   
+  this.gl.mvPopMatrix();
+  
+  // No matter what size this is, we want everything to overwrite it.  Clearing the depth buffer
+  // effectively makes points on the skysphere infinitely distant.
   gl.clear(gl.DEPTH_BUFFER_BIT);
 }
