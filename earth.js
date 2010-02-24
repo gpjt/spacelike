@@ -1,7 +1,9 @@
 function Earth(gl, location) {
   this.gl = gl;
-  this.shininess = 32;
+  this.mass = 5973600000000000000000000;
   this.location = location;
+  this.velocity = V3.$(0, 0, 0);
+  this.acceleration = V3.$(0, 0, 0);
 
   this.colorMap = loadTexture("earth.jpg");  
   this.specularMap = loadTexture("earth-specular.gif");
@@ -53,5 +55,10 @@ Earth.prototype.draw = function(shaderProgram, offset) {
 
 
 Earth.prototype.animate = function(elapsed) {
-  this.rotateAngle += (10 * elapsed) / 1000;
+  elapsed /= 1000;
+  this.location = V3.add(this.location, V3.add(V3.scale(this.velocity, elapsed), V3.scale(this.acceleration, 0.5 * elapsed * elapsed)));
+  this.velocity = V3.add(this.velocity, this.acceleration);
+
+  // Spin at 360 degrees/day == 0.00416 degrees/second.
+  this.rotateAngle += 0.00416 * elapsed;
 }

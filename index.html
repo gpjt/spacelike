@@ -274,19 +274,15 @@
     }
     if (currentlyPressedKeys[37]) {
       // Left cursor key
-      ySpeed -= 1;
     }
     if (currentlyPressedKeys[39]) {
       // Right cursor key
-      ySpeed += 1;
     }
     if (currentlyPressedKeys[38]) {
       // Up cursor key
-      xSpeed -= 1;
     }
     if (currentlyPressedKeys[40]) {
       // Down cursor key
-      xSpeed += 1;
     }
   }
 
@@ -352,6 +348,28 @@
   }
 
 
+  // NB our distances are in kilometers so G is 1,000,000 times smaller than
+  // it would normally be.
+  var G = 0.00000000000000006674
+  function doPhysics() {
+    for (var i in worldObjects) {
+      var obj1 = worldObjects[i];
+      obj1.acceleration = V3.$(0, 0, 0);
+      for (var j in worldObjects) {
+        var obj2 = worldObjects[j];
+
+        if (obj1 != obj2) {
+          var displacement = V3.sub(obj2.location, obj1.location);
+          // NB We have to divide by a further 1,000 because although our value for G is scaled to km,
+          // we still get a value from Newton's equation in terms of m/s, so need to rescale.
+          var acceleration = V3.scale(V3.normalize(displacement), (G * obj2.mass) / (V3.lengthSquared(displacement) * 1000));
+          obj1.acceleration = V3.add(obj1.acceleration, acceleration);
+        }
+      }
+    }
+  }
+
+
   var lastTime = 0;
   function animate() {
     var timeNow = new Date().getTime();
@@ -368,13 +386,16 @@
 
 
   function updateDebugFields() {
-    document.getElementById("cameraDistance").innerHTML = cameraDistance;sett
+    document.getElementById("cameraDistance").innerHTML = cameraDistance;
+    document.getElementById("acceleration").innerHTML = playerAvatar.acceleration[0] + ", " + playerAvatar.acceleration[1] + ", " + playerAvatar.acceleration[2];
+    document.getElementById("velocity").innerHTML = playerAvatar.velocity[0] + ", " + playerAvatar.velocity[1] + ", " + playerAvatar.velocity[2];
   }
 
 
   function tick() {
     handleKeys();
     drawScene();
+    doPhysics();
     animate();
     updateDebugFields();
   }
@@ -390,13 +411,14 @@
   var worldObjects = [];
   var skySphere;
   var playerAvatar;
+  var earth;
   function initWorld() {
     skySphere = new SkySphere(gl);
 
     var sun = new Sun(gl, V3.$(0, 0, 0));
     worldObjects.push(sun);
 
-    var earth = new Earth(gl, V3.add(V3.$(149597887, 0, 0), sun.location));
+    earth = new Earth(gl, V3.add(V3.$(149597887, 0, 0), sun.location));
     worldObjects.push(earth);
 
     playerAvatar = new Spacecraft(gl, V3.add(V3.$(0, 0, 18000), earth.location));
@@ -439,6 +461,8 @@
   <canvas id="canvas-3d" style="border: none;" width="1000" height="800"></canvas>
 
 <p>Camera distance: <span id="cameraDistance"></span></p>
+<p>Acceleration: <span id="acceleration"></span></p>
+<p>Velocity: <span id="velocity"></span></p>
 
   <br/>
 Earth texture courtesy of <a href="http://www.esa.int/esaEO/SEMGSY2IU7E_index_0.html">the European Space Agency/Envisat</a>.<br/>

@@ -1,6 +1,10 @@
 function Sun(gl, location) {
   this.gl = gl;
+  this.mass = 1989100000000000000000000000000;
   this.location = location;
+  this.velocity = V3.$(0, 0, 0);
+  this.acceleration = V3.$(0, 0, 0);
+
   this.mesh = createSphereMesh(gl, 1392000);
 }
 
@@ -61,4 +65,7 @@ Sun.prototype.draw = function(shaderProgram, offset) {
 
 
 Sun.prototype.animate = function(elapsed) {
+  elapsed /= 1000;
+  this.location = V3.add(this.location, V3.add(V3.scale(this.velocity, elapsed), V3.scale(this.acceleration, 0.5 * elapsed * elapsed)));
+  this.velocity = V3.add(this.velocity, this.acceleration);
 }
