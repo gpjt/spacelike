@@ -265,12 +265,12 @@
     if (currentlyPressedKeys[33]) {
       // Page Up
       if (cameraDistance > 0.17) {
-        cameraDistance -= 0.01;
+        cameraDistance /= 1.05;
       }
     }
     if (currentlyPressedKeys[34]) {
       // Page Down
-      cameraDistance += 0.01;
+      cameraDistance *= 1.05;
     }
     if (currentlyPressedKeys[37]) {
       // Left cursor key
