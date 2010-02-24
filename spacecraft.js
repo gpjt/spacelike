@@ -95,5 +95,5 @@ Spacecraft.prototype.draw = function(shaderProgram, offset) {
 Spacecraft.prototype.animate = function(elapsed) {
   elapsed /= 1000;
   this.location = V3.add(this.location, V3.add(V3.scale(this.velocity, elapsed), V3.scale(this.acceleration, 0.5 * elapsed * elapsed)));
-  this.velocity = V3.add(this.velocity, this.acceleration);
+  this.velocity = V3.add(this.velocity, V3.scale(this.acceleration, elapsed));
 }
