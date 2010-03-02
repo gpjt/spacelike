@@ -1,6 +1,6 @@
 function SkySphere(gl) {
   this.gl = gl;
-  this.colorMap = loadTexture("gigapixel-milky-way.jpg");  
+  this.colorMap = loadTexture("gigapixel-milky-way.gif");  
   this.mesh = createSphereMesh(gl, 1);
 }
 
