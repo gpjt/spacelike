@@ -28,25 +28,25 @@ Spacecraft.prototype.onLoaded = function(spacecraftData) {
   
   mesh.vertexNormalBuffer = this.gl.createBuffer();
   this.gl.bindBuffer(this.gl.ARRAY_BUFFER, mesh.vertexNormalBuffer);
-  this.gl.bufferData(this.gl.ARRAY_BUFFER, new WebGLFloatArray(spacecraftData.vertexNormals), this.gl.STATIC_DRAW);
+  this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(spacecraftData.vertexNormals), this.gl.STATIC_DRAW);
   mesh.vertexNormalBuffer.itemSize = 3;
   mesh.vertexNormalBuffer.numItems = spacecraftData.vertexNormals.length / 3;
 
   mesh.vertexTextureCoordBuffer = this.gl.createBuffer();
   this.gl.bindBuffer(this.gl.ARRAY_BUFFER, mesh.vertexTextureCoordBuffer);
-  this.gl.bufferData(this.gl.ARRAY_BUFFER, new WebGLFloatArray(spacecraftData.vertexTextureCoords), this.gl.STATIC_DRAW);
+  this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(spacecraftData.vertexTextureCoords), this.gl.STATIC_DRAW);
   mesh.vertexTextureCoordBuffer.itemSize = 2;
   mesh.vertexTextureCoordBuffer.numItems = spacecraftData.vertexTextureCoords.length / 2;
 
   mesh.vertexPositionBuffer = this.gl.createBuffer();
   this.gl.bindBuffer(this.gl.ARRAY_BUFFER, mesh.vertexPositionBuffer);
-  this.gl.bufferData(this.gl.ARRAY_BUFFER, new WebGLFloatArray(spacecraftData.vertexPositions), this.gl.STATIC_DRAW);
+  this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(spacecraftData.vertexPositions), this.gl.STATIC_DRAW);
   mesh.vertexPositionBuffer.itemSize = 3;
   mesh.vertexPositionBuffer.numItems = spacecraftData.vertexPositions.length / 3;
 
   mesh.vertexIndexBuffer = this.gl.createBuffer();
   this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, mesh.vertexIndexBuffer);
-  this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new WebGLUnsignedShortArray(spacecraftData.indices), this.gl.STREAM_DRAW);
+  this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(spacecraftData.indices), this.gl.STREAM_DRAW);
   mesh.vertexIndexBuffer.itemSize = 3;
   mesh.vertexIndexBuffer.numItems = spacecraftData.indices.length;
   

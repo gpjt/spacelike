@@ -9,7 +9,7 @@ By Giles Thomas, giles@giles.net
 Released under a Creative Commons Attribution-Share Alike 2.0 UK: England & Wales License
 See here for details: http://creativecommons.org/licenses/by-sa/2.0/uk/
 
-If you modify the spacecraft model in Blender, the process for exporting it is a bit 
+If you modify the spacecraft model in Blender, the process for exporting it is a bit
 manual (and will be improved, honest :-):
 
 - Select the spacecraft from the Blender 3D view

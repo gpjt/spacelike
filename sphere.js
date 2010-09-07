@@ -52,25 +52,25 @@ function createSphereMesh(gl, radius) {
   var result = {}
   result.vertexNormalBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, result.vertexNormalBuffer);
-  gl.bufferData(gl.ARRAY_BUFFER, new WebGLFloatArray(normalData), gl.STATIC_DRAW);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normalData), gl.STATIC_DRAW);
   result.vertexNormalBuffer.itemSize = 3;
   result.vertexNormalBuffer.numItems = normalData.length / 3;
 
   result.vertexTextureCoordBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, result.vertexTextureCoordBuffer);
-  gl.bufferData(gl.ARRAY_BUFFER, new WebGLFloatArray(textureCoordData), gl.STATIC_DRAW);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoordData), gl.STATIC_DRAW);
   result.vertexTextureCoordBuffer.itemSize = 2;
   result.vertexTextureCoordBuffer.numItems = textureCoordData.length / 2;
 
   result.vertexPositionBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, result.vertexPositionBuffer);
-  gl.bufferData(gl.ARRAY_BUFFER, new WebGLFloatArray(vertexPositionData), gl.STATIC_DRAW);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositionData), gl.STATIC_DRAW);
   result.vertexPositionBuffer.itemSize = 3;
   result.vertexPositionBuffer.numItems = vertexPositionData.length / 3;
 
   result.vertexIndexBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, result.vertexIndexBuffer);
-  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new WebGLUnsignedShortArray(indexData), gl.STREAM_DRAW);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexData), gl.STREAM_DRAW);
   result.vertexIndexBuffer.itemSize = 3;
   result.vertexIndexBuffer.numItems = indexData.length;
 
