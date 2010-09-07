@@ -71,7 +71,7 @@ function createSphereMesh(gl, radius) {
   result.vertexIndexBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, result.vertexIndexBuffer);
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexData), gl.STREAM_DRAW);
-  result.vertexIndexBuffer.itemSize = 3;
+  result.vertexIndexBuffer.itemSize = 1;
   result.vertexIndexBuffer.numItems = indexData.length;
 
   return result;

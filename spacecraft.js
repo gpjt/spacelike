@@ -47,7 +47,7 @@ Spacecraft.prototype.onLoaded = function(spacecraftData) {
   mesh.vertexIndexBuffer = this.gl.createBuffer();
   this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, mesh.vertexIndexBuffer);
   this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(spacecraftData.indices), this.gl.STREAM_DRAW);
-  mesh.vertexIndexBuffer.itemSize = 3;
+  mesh.vertexIndexBuffer.itemSize = 1;
   mesh.vertexIndexBuffer.numItems = spacecraftData.indices.length;
   
   this.mesh = mesh;
